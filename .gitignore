@@ -35,4 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
-*.yml
+## jwt ##
+application-secret.yml
