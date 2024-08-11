@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,8 +20,8 @@ public class BlogApiController {
     private final BlogService blogService;
 
     @PostMapping("/api/articles")
-    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request) { //요청할 때 응답 값을 addarticlerequest에 매핑
-        Article savedArticle = blogService.save(request);
+    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request, Principal principal) { //요청할 때 응답 값을 addarticlerequest에 매핑, 현재 인증 정보를 가져오는 객체
+        Article savedArticle = blogService.save(request, principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);    //created를 응답하고 테이블에 저장된 객체 반환
     }
 

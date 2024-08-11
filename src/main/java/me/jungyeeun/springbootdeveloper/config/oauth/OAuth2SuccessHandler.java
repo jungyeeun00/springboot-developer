@@ -37,11 +37,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         User user = userService.findByEmail((String) oAuth2User.getAttributes().get("email"));
 
-        //리프레시 토큰 생성->저장->쿠키에 저장
+        //리프레시 토큰 생성->db에 저장->쿠키에 저장
         String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
         saveRefreshToken(user.getId(), refreshToken);
         addRefreshTokenToCookie(request, response, refreshToken);
-        //엑세스 토큰 생성->패스에 액세스 토큰 추가
+        //엑세스 토큰 생성->패스의 쿼리 파라미터에 액세스 토큰 추가
         String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
         String targetUrl = getTargetUrl(accessToken);
         //인증 관련 설정값, 쿠키 제거
@@ -69,7 +69,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     //인증 관련 설정값, 쿠키 제거
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
-        authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+        authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);    //Oauth 인증을 위해 저장된 정보 삭제
     }
 
     //액세스 토큰을 패스에 추가
