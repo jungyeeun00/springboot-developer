@@ -3,9 +3,12 @@ package me.jungyeeun.springbootdeveloper.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.jungyeeun.springbootdeveloper.domain.Article;
+import me.jungyeeun.springbootdeveloper.domain.Comment;
 import me.jungyeeun.springbootdeveloper.dto.AddArticleRequest;
+import me.jungyeeun.springbootdeveloper.dto.AddCommentRequest;
 import me.jungyeeun.springbootdeveloper.dto.UpdateArticleRequest;
 import me.jungyeeun.springbootdeveloper.repository.BlogRepository;
+import me.jungyeeun.springbootdeveloper.repository.CommentRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,14 @@ import java.util.List;
 public class BlogService {
 
     private final BlogRepository blogRepository;
+    private final CommentRepository commentRepository;
+
+    public Comment addComment(AddCommentRequest request, String userName) {
+        Article article = blogRepository.findById(request.getArticleId())
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + request.getArticleId()));
+
+        return commentRepository.save(request.toEntity(userName, article));
+    }
 
     public Article save(AddArticleRequest request, String userName) {
         return blogRepository.save(request.toEntity(userName));

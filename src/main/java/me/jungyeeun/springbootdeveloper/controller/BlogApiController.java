@@ -2,9 +2,8 @@ package me.jungyeeun.springbootdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.jungyeeun.springbootdeveloper.domain.Article;
-import me.jungyeeun.springbootdeveloper.dto.AddArticleRequest;
-import me.jungyeeun.springbootdeveloper.dto.ArticleResponse;
-import me.jungyeeun.springbootdeveloper.dto.UpdateArticleRequest;
+import me.jungyeeun.springbootdeveloper.domain.Comment;
+import me.jungyeeun.springbootdeveloper.dto.*;
 import me.jungyeeun.springbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,12 @@ import java.util.List;
 public class BlogApiController {
 
     private final BlogService blogService;
+
+    @PostMapping("/api/comments")
+    public ResponseEntity<AddCommentResponse> addComment(@RequestBody AddCommentRequest request, Principal principal) {
+        Comment savedComment = blogService.addComment(request, principal.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AddCommentResponse(savedComment));
+    }
 
     @PostMapping("/api/articles")
     public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request, Principal principal) { //요청할 때 응답 값을 addarticlerequest에 매핑, 현재 인증 정보를 가져오는 객체

@@ -2,14 +2,18 @@ package me.jungyeeun.springbootdeveloper.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.jungyeeun.springbootdeveloper.domain.Article;
+import me.jungyeeun.springbootdeveloper.domain.Comment;
 import me.jungyeeun.springbootdeveloper.domain.User;
 import me.jungyeeun.springbootdeveloper.dto.AddArticleRequest;
+import me.jungyeeun.springbootdeveloper.dto.AddCommentRequest;
 import me.jungyeeun.springbootdeveloper.dto.UpdateArticleRequest;
 import me.jungyeeun.springbootdeveloper.repository.BlogRepository;
+import me.jungyeeun.springbootdeveloper.repository.CommentRepository;
 import me.jungyeeun.springbootdeveloper.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +27,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.print.attribute.standard.Media;
 import java.security.Principal;
 import java.util.List;
 
@@ -50,6 +55,9 @@ class BlogApiControllerTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    CommentRepository commentRepository;
+
     User user;
 
     @BeforeEach
@@ -57,6 +65,7 @@ class BlogApiControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .build();
         blogRepository.deleteAll();
+        commentRepository.deleteAll();
     }
 
     @BeforeEach
@@ -69,6 +78,37 @@ class BlogApiControllerTest {
 
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
+    }
+
+    @DisplayName("addComment: 댓글 추가에 성공한다")
+    @Test
+    public void addComment() throws Exception {
+        //given
+        final String url = "/api/comments";
+
+        Article savedArticle = createDefaultArticle();
+        final Long articleId = savedArticle.getId();
+        final String content = "content";
+        final AddCommentRequest userRequest = new AddCommentRequest(articleId, content);
+        final String requestBody = objectMapper.writeValueAsString(userRequest);    //객체를 json으로 직렬화
+
+        Principal principal = Mockito.mock(Principal.class);    //principal 객체에 테스트 유저 들어가도록 모킹
+        Mockito.when(principal.getName()).thenReturn("username");
+
+        //when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)  //요청타입
+                .principal(principal)
+                .content(requestBody)); //요청본문
+
+        //then
+        result.andExpect(status().isCreated());
+
+        List<Comment> comments = commentRepository.findAll();
+
+        assertThat(comments.size()).isEqualTo(1);
+        assertThat(comments.get(0).getArticle().getId()).isEqualTo(articleId);
+        assertThat(comments.get(0).getContent()).isEqualTo(content);
     }
 
     @DisplayName("addArticle:블로그 글 추가에 성공한다")

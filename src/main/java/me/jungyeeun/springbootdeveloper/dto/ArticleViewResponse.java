@@ -3,8 +3,10 @@ package me.jungyeeun.springbootdeveloper.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.jungyeeun.springbootdeveloper.domain.Article;
+import me.jungyeeun.springbootdeveloper.domain.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -15,6 +17,7 @@ public class ArticleViewResponse {
     private String content;
     private LocalDateTime createdAt;
     private String author;
+    private List<Comment> comments;
 
     public ArticleViewResponse(Article article) {
         this.id = article.getId();
@@ -22,6 +25,7 @@ public class ArticleViewResponse {
         this.content = article.getContent();
         this.createdAt = article.getCreatedAt();
         this.author = article.getAuthor();
+        this.comments = article.getComments();
     }
 
 }
