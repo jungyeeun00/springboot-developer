@@ -19,18 +19,18 @@ jobs:
           java-version: '22'
 
       - name: Create application-secret.yml
-          run: |
-            echo "spring:" > src/main/resources/application-secret.yml
-            echo "  security:" >> src/main/resources/application-secret.yml
-            echo "    oauth2:" >> src/main/resources/application-secret.yml
-            echo "      client:" >> src/main/resources/application-secret.yml
-            echo "        registration:" >> src/main/resources/application-secret.yml
-            echo "          google:" >> src/main/resources/application-secret.yml
-            echo "            client-id: ${{ secrets.GOOGLE_CLIENT_ID }}" >> src/main/resources/application-secret.yml
-            echo "            client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}" >> src/main/resources/application-secret.yml
-            echo "            scope:" >> src/main/resources/application-secret.yml
-            echo "              - email" >> src/main/resources/application-secret.yml
-            echo "              - profile" >> src/main/resources/application-secret.yml
+        run: |
+          echo "spring:" > src/main/resources/application-secret.yml
+          echo "  security:" >> src/main/resources/application-secret.yml
+          echo "    oauth2:" >> src/main/resources/application-secret.yml
+          echo "      client:" >> src/main/resources/application-secret.yml
+          echo "        registration:" >> src/main/resources/application-secret.yml
+          echo "          google:" >> src/main/resources/application-secret.yml
+          echo "            client-id: ${{ secrets.GOOGLE_CLIENT_ID }}" >> src/main/resources/application-secret.yml
+          echo "            client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}" >> src/main/resources/application-secret.yml
+          echo "            scope:" >> src/main/resources/application-secret.yml
+          echo "              - email" >> src/main/resources/application-secret.yml
+          echo "              - profile" >> src/main/resources/application-secret.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
